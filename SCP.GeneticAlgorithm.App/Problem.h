@@ -56,30 +56,5 @@ public:
 		this->columnCoverings = columnCoverings;
 	}
 
-	/*void readFile(string inputFile) {
-
-		ifstream file(inputFile);
-
-		if (file.is_open())
-		{
-			string size;
-			vector<string> sizes;
-			getline(file, size);
-
-			
-
-			
-			sizes = split(size, ':');
-
-			file.close();
-		}
-		else {
-			cout << "Unable to open file";
-		}
-
-	}*/
-
-
-
 
 };
