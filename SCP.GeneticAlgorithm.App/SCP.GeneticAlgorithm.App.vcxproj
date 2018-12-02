@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Contants.h" />
+    <ClInclude Include="GeneticAlgorithm.h" />
     <ClInclude Include="Problem.h" />
     <ClInclude Include="Solution.h" />
   </ItemGroup>

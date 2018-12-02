@@ -16,6 +16,7 @@ private:
 	vector<vector<int>> column_coverings_; // the set of rows that covers column
 
 public:
+	// accessors and mutators
 	int rows_count() {
 		return rows_count_;
 	}
@@ -56,7 +57,7 @@ public:
 		this->column_coverings_ = column_coverings;
 	}
 
-
+	// member functions
 	void ReadFile(string input_file) {
 
 		cout << "inputFile" << input_file << endl;
@@ -123,9 +124,6 @@ public:
 					}
 				}
 
-				//vector<vector<int>>::iterator it;
-				//this->row_coverings_.insert(row_coverings_.end(), single_row_coverings.begin(), single_row_coverings.end());
-
 				this->row_coverings_.push_back(single_row_coverings);
 			}
 
@@ -141,15 +139,13 @@ public:
 						single_column_coverings.push_back(j);
 					}
 				}
-				//vector<vector<int>>::iterator it;
-				//this->column_coverings_.insert(column_coverings_.end(), single_column_coverings.begin(), single_column_coverings.end());
-			
+
 				this->column_coverings_.push_back(single_column_coverings);
 			}
 
 			file.close();
 
-			cout << "file is closed" << endl;
+			cout << "File is closed." << endl;
 		}
 		else {
 
