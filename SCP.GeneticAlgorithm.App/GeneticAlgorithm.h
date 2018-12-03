@@ -25,7 +25,7 @@ private:
 	int tournament_size;
 	list<map<long, int>> log;
 
-	// Private member functions
+#pragma region private member functions
 	boost::dynamic_bitset<> TournamentSelection() {
 		int best_fitness = INT_MAX;
 		boost::dynamic_bitset<> best;
@@ -84,6 +84,18 @@ private:
 		return dis(gen);
 	}
 
+	bool IsUnique(boost::dynamic_bitset<> solution) {
+
+		for (int i = 0; i < this->population_size; i++) {
+			boost::dynamic_bitset<> copy = solution;
+			copy ^= this->population[i];
+			if (copy.size()) {
+				return false;
+			}
+			return true;
+		}
+	}
+
 	int Fitness(boost::dynamic_bitset<> solution) {
 		int fitness = 0;
 		for (int i = 0; i < solution.size(); i++) {
@@ -118,15 +130,37 @@ private:
 		}
 	}
 
+	void Replace(boost::dynamic_bitset<> solution) {
+		int average_fitness = 0;
+		for (int i = 0; i < this->population_fitness.size(); i++) {
+			average_fitness += this->population_fitness[i];
+		}
+		average_fitness = (int)average_fitness / this->population_fitness.size();
+
+		bool is_replaced = false;
+
+		while (!is_replaced) {
+			int random_number = GenerateRandomInteger(this->population_fitness.size());
+			if (this->population_fitness[random_number] > average_fitness) {
+				this->population[random_number] = solution;
+				this->population_fitness[random_number] = Fitness(solution);
+				is_replaced = true;
+			}
+		}
+	}
+
+	
+
+
+#pragma endregion
+
 public:
 	// Constructor
 	GeneticAlgorithm(int t, Problem problem, int population_size, int running_time, int tournament_size);
 
 	// Public member functions
 	void Initialize();
-
-
-
+	int GetBestFitness();
 };
 
 // constructor
@@ -140,5 +174,15 @@ GeneticAlgorithm::GeneticAlgorithm(int t, Problem problem, int population_size, 
 void GeneticAlgorithm::Initialize() {
 	GenerateInitialPopulation();
 	CalculateAllFitness();
+}
+
+int GeneticAlgorithm::GetBestFitness() {
+	int best_fitness = INT_MAX;
+	for (int i = 0; i < this->population_size; i++) {
+		if (this->population_fitness[i] < best_fitness) {
+			best_fitness = this->population_fitness[i];
+		}
+	}
+	return best_fitness;
 }
 
