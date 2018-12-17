@@ -1,4 +1,4 @@
-//#include <boost/algorithm/string.hpp>
+#pragma once
 #include <boost/dynamic_bitset.hpp>
 #include <stdlib.h>
 #include <random>
@@ -9,6 +9,10 @@
 #include <map>
 #include "Problem.h"
 #include "Solution.h"
+
+#include <stdio.h>
+#include <time.h>
+
 
 using namespace std;
 
@@ -21,9 +25,9 @@ private:
 	int population_size;
 	vector<boost::dynamic_bitset<>> population; // all solutions
 	vector<int> population_fitness;
-	int running_time;
+	int running_time; // maximum running time
 	int tournament_size;
-	list<map<long, int>> log;
+	vector<pair<long, int>> log;
 
 #pragma region private member functions
 	boost::dynamic_bitset<> TournamentSelection() {
@@ -66,6 +70,8 @@ private:
 	boost::dynamic_bitset<> Mutation(boost::dynamic_bitset<> solution) {
 		int random_integer = GenerateRandomInteger(solution.size());
 		solution.flip(random_integer);
+
+		return solution;
 	}
 
 	double GenerateRandomDouble() {
@@ -96,6 +102,23 @@ private:
 		}
 	}
 
+	bool IsConverged() {
+		// std::map<long, int>::iterator it;
+
+
+		if (this->log.empty() || this->log.size() < 60) {
+			return false;
+		}
+		int best_fitness = this->log[log.size() - 1].second;
+		for (int i = 1; i < 60; i++) {
+			int temp = this->log[log.size() - 1].second;
+			if (temp != best_fitness) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	int Fitness(boost::dynamic_bitset<> solution) {
 		int fitness = 0;
 		for (int i = 0; i < solution.size(); i++) {
@@ -119,6 +142,10 @@ private:
 		}
 	}
 
+	boost::dynamic_bitset<> MakeFeasible(boost::dynamic_bitset<> solution) {
+		return Solution::MakeFeasible(solution, problem);
+	}
+
 	void Evolve() {
 		bool unique = false;
 		boost::dynamic_bitset<> new_solution;
@@ -126,8 +153,14 @@ private:
 			boost::dynamic_bitset<> parent_one = TournamentSelection();
 			boost::dynamic_bitset<> parent_two = TournamentSelection();
 			new_solution = Crossover(parent_one, parent_two);
+			new_solution = Mutation(new_solution);
+			new_solution = MakeFeasible(new_solution);
+			unique = IsUnique(new_solution);
 
 		}
+		Replace(new_solution);
+		cout << "New solution: " << new_solution;
+		this->t++;
 	}
 
 	void Replace(boost::dynamic_bitset<> solution) {
@@ -149,9 +182,6 @@ private:
 		}
 	}
 
-	
-
-
 #pragma endregion
 
 public:
@@ -161,6 +191,9 @@ public:
 	// Public member functions
 	void Initialize();
 	int GetBestFitness();
+	void Train();
+	vector<pair<long, int>> GetLog();
+
 };
 
 // constructor
@@ -184,5 +217,25 @@ int GeneticAlgorithm::GetBestFitness() {
 		}
 	}
 	return best_fitness;
+}
+
+vector<pair<long, int>> GeneticAlgorithm::GetLog() {
+	return log;
+}
+
+void GeneticAlgorithm::Train() {
+
+	/*double time_counter = 0;
+	clock_t start_time = clock();
+
+	while (!IsConverged() && ((clock() - start_time)/1000/60 < this->running_time)) {
+		if (clock() - start_time % 1000 == 0) {
+			log.push_back(make_pair(clock() - start_time, GetBestFitness()));
+		}
+		Evolve();
+	}*/
+
+	Evolve();
+
 }
 

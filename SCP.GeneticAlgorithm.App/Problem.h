@@ -1,3 +1,4 @@
+#pragma once
 #include <boost/algorithm/string.hpp>
 #include <vector>
 #include <iostream>
@@ -65,7 +66,7 @@ public:
 		ifstream file(input_file);
 
 		if (file.is_open()) {
-		
+
 			cout << "file is opened" << endl;
 
 			string size;
@@ -81,7 +82,7 @@ public:
 
 			// read input file and store the costs into private member "costs"
 			while (counter < columns_count_) {
-				string line; 
+				string line;
 				vector<string> temp_costs;
 
 				getline(file, line);
@@ -107,7 +108,7 @@ public:
 				// number of columns in the current set
 				int num_of_columns = stoi(str_num_of_columns[0]);
 
-				
+
 				int col_counter = 0;
 				vector<int> single_row_coverings; //
 
@@ -117,7 +118,7 @@ public:
 					getline(file, line);
 					boost::trim(line);
 					boost::algorithm::split(temp_columns, line, boost::is_any_of(" "));
-					
+
 					for (size_t j = 0; j < temp_columns.size(); j++) {
 						single_row_coverings.push_back(stoi(temp_columns[j]));
 						col_counter++;
