@@ -1,12 +1,18 @@
 #include <iostream>
 #include "Contants.h"
 #include "Problem.h"
+#include "GeneticAlgorithm.h"
 
 using namespace std;
 int main()
 {
 	Problem problem;
 	problem.ReadFile(FILE_DIRECTORY);
+	//GeneticAlgorithm ga(0, problem, 100, 60, 2);
+	//cout << "Initialising initial population" << endl;
+	//ga.Initialize();
+	//cout << "Completed initializing initial population" << endl;
+	//ga.Train();
 
 #pragma region print columns and rows count
 	cout << "columns_count: " << problem.columns_count() << endl;
@@ -16,7 +22,7 @@ int main()
 #pragma region print costs
 	vector<int>::iterator it_costs;
 
-	cout << "printing costs:" << endl;
+	cout << "Printing costs:" << endl;
 	vector<int> costs = problem.costs();
 	for (it_costs = costs.begin(); it_costs != costs.end(); ++it_costs)
 	{
@@ -28,7 +34,7 @@ int main()
 #pragma region print row coverings
 	vector<int>::iterator it_row_coverings;
 
-	cout << "printing row_coverings:" << endl;
+	cout << "Printing row_coverings:" << endl;
 
 	for (size_t i = 0; i < problem.row_coverings().size() - 1; i++) {
 		vector<int> single_row_covering = problem.row_coverings()[i];
@@ -44,7 +50,7 @@ int main()
 #pragma region print column coverings
 	vector<int>::iterator it_column_coverings;
 
-	cout << "printing column_coverings:" << endl;
+	cout << "Printing column_coverings:" << endl;
 
 	for (size_t i = 0; i < problem.column_coverings().size() - 1; i++) {
 		vector<int> single_column_covering = problem.column_coverings()[i];
