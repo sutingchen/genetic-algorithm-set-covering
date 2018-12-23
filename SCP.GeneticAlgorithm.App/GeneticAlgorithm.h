@@ -7,11 +7,11 @@
 #include <string>
 #include <list>
 #include <map>
+#include <stdio.h>
+#include <time.h>
 #include "Problem.h"
 #include "Solution.h"
 
-#include <stdio.h>
-#include <time.h>
 
 
 using namespace std;
@@ -21,25 +21,25 @@ class GeneticAlgorithm {
 private:
 	//private member variables
 	int t = 0;
-	Problem problem;
-	int population_size;
-	vector<boost::dynamic_bitset<>> population; // all solutions
-	vector<int> population_fitness;
-	int running_time; // maximum running time
-	int tournament_size;
-	vector<pair<long, int>> log;
+	Problem problem_;
+	int population_size_;
+	vector<boost::dynamic_bitset<>> population_; // all solutions
+	vector<int> population_fitness_;
+	int running_time_; // maximum running time
+	int tournament_size_;
+	vector<pair<long, int>> log_;
 
 #pragma region private member functions
 	boost::dynamic_bitset<> TournamentSelection() {
 		int best_fitness = INT_MAX;
 		boost::dynamic_bitset<> best;
-		for (int i = 0; i < this->tournament_size; i++) {
+		for (int i = 0; i < this->tournament_size_; i++) {
 
-			int random_number = rand() % this->population.size();
-			boost::dynamic_bitset<> individual = population[random_number];
-			if (best.empty() || this->population_fitness[random_number] < best_fitness) {
+			int random_number = rand() % this->population_.size();
+			boost::dynamic_bitset<> individual = population_[random_number];
+			if (best.empty() || this->population_fitness_[random_number] < best_fitness) {
 				best = individual;
-				best_fitness = this->population_fitness[random_number];
+				best_fitness = this->population_fitness_[random_number];
 			}
 		}
 
@@ -92,9 +92,9 @@ private:
 
 	bool IsUnique(boost::dynamic_bitset<> solution) {
 
-		for (int i = 0; i < this->population_size; i++) {
+		for (int i = 0; i < this->population_size_; i++) {
 			boost::dynamic_bitset<> copy = solution;
-			copy ^= this->population[i];
+			copy ^= this->population_[i];
 			if (copy.size()) {
 				return false;
 			}
@@ -106,12 +106,12 @@ private:
 		// std::map<long, int>::iterator it;
 
 
-		if (this->log.empty() || this->log.size() < 60) {
+		if (this->log_.empty() || this->log_.size() < 60) {
 			return false;
 		}
-		int best_fitness = this->log[log.size() - 1].second;
+		int best_fitness = this->log_[log_.size() - 1].second;
 		for (int i = 1; i < 60; i++) {
-			int temp = this->log[log.size() - 1].second;
+			int temp = this->log_[log_.size() - 1].second;
 			if (temp != best_fitness) {
 				return false;
 			}
@@ -123,27 +123,27 @@ private:
 		int fitness = 0;
 		for (int i = 0; i < solution.size(); i++) {
 			if (solution[i]) {
-				fitness += problem.costs()[i];
+				fitness += problem_.costs()[i];
 			}
 		}
 		return fitness;
 	}
 
 	void GenerateInitialPopulation() {
-		for (int i = 0; i < this->population_size; i++) {
-			boost::dynamic_bitset<> solution = Solution::CreateSolution(this->problem);
-			population.push_back(solution);
+		for (int i = 0; i < this->population_size_; i++) {
+			boost::dynamic_bitset<> solution = Solution::CreateSolution(this->problem_);
+			population_.push_back(solution);
 		}
 	}
 
 	void CalculateAllFitness() {
-		for (int i = 0; i < this->population_size; i++) {
-			population_fitness.push_back(Fitness(this->population[i]));
+		for (int i = 0; i < this->population_size_; i++) {
+			population_fitness_.push_back(Fitness(this->population_[i]));
 		}
 	}
 
 	boost::dynamic_bitset<> MakeFeasible(boost::dynamic_bitset<> solution) {
-		return Solution::MakeFeasible(solution, problem);
+		return Solution::MakeFeasible(solution, problem_);
 	}
 
 	void Evolve() {
@@ -165,18 +165,18 @@ private:
 
 	void Replace(boost::dynamic_bitset<> solution) {
 		int average_fitness = 0;
-		for (int i = 0; i < this->population_fitness.size(); i++) {
-			average_fitness += this->population_fitness[i];
+		for (int i = 0; i < this->population_fitness_.size(); i++) {
+			average_fitness += this->population_fitness_[i];
 		}
-		average_fitness = (int)average_fitness / this->population_fitness.size();
+		average_fitness = (int)average_fitness / this->population_fitness_.size();
 
 		bool is_replaced = false;
 
 		while (!is_replaced) {
-			int random_number = GenerateRandomInteger(this->population_fitness.size());
-			if (this->population_fitness[random_number] > average_fitness) {
-				this->population[random_number] = solution;
-				this->population_fitness[random_number] = Fitness(solution);
+			int random_number = GenerateRandomInteger(this->population_fitness_.size());
+			if (this->population_fitness_[random_number] > average_fitness) {
+				this->population_[random_number] = solution;
+				this->population_fitness_[random_number] = Fitness(solution);
 				is_replaced = true;
 			}
 		}
@@ -198,10 +198,10 @@ public:
 
 // constructor
 GeneticAlgorithm::GeneticAlgorithm(int t, Problem problem, int population_size, int running_time, int tournament_size) {
-	this->problem = problem;
-	this->population_size = population_size;
-	this->running_time = running_time;
-	this->tournament_size = tournament_size;
+	this->problem_ = problem;
+	this->population_size_ = population_size;
+	this->running_time_ = running_time;
+	this->tournament_size_ = tournament_size;
 }
 
 void GeneticAlgorithm::Initialize() {
@@ -211,16 +211,16 @@ void GeneticAlgorithm::Initialize() {
 
 int GeneticAlgorithm::GetBestFitness() {
 	int best_fitness = INT_MAX;
-	for (int i = 0; i < this->population_size; i++) {
-		if (this->population_fitness[i] < best_fitness) {
-			best_fitness = this->population_fitness[i];
+	for (int i = 0; i < this->population_size_; i++) {
+		if (this->population_fitness_[i] < best_fitness) {
+			best_fitness = this->population_fitness_[i];
 		}
 	}
 	return best_fitness;
 }
 
 vector<pair<long, int>> GeneticAlgorithm::GetLog() {
-	return log;
+	return log_;
 }
 
 void GeneticAlgorithm::Train() {
